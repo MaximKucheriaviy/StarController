@@ -13,12 +13,14 @@ unsigned long int preDelay = 0;
 Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 
 
-int mode = 3;
+int mode = 1;
 int preMode = -1;
 bool update = true;
 unsigned long int timer = 0;
 bool autoTimeControl = true;
 bool atcRool = true;
+int ATdel = 8000;
+bool starLonch = true;
 
 
 IRrecv irrecv(RECV_PIN);
@@ -30,6 +32,7 @@ void setup()
   irrecv.enableIRIn(); // Start the receiver
   pixels.begin();
   pixels.clear();
+  randomSeed(analogRead(A5));
 }
 
 void loop() {
@@ -60,6 +63,7 @@ void loop() {
      }   
      else if(mode == 1){
         del = 100;
+        ATdel = 8000;
         atcRool = true;
         for(int i = 0; i < 18; i++){
           if(i % 4 == 0){
@@ -83,6 +87,13 @@ void loop() {
      }
      else if(mode == 3){
         del = 90;
+        atcRool = true;
+        for(int i = 0; i < 18; i++){
+          LED[i] = 0;
+        }
+     }
+     else if(mode == 4){
+        del = 700 / 18;
         atcRool = true;
         for(int i = 0; i < 18; i++){
           LED[i] = 0;
@@ -143,6 +154,17 @@ void loop() {
         }
       }
     }
+    else if(mode == 4){
+      for(int i = 17; i > 0; i--){
+        LED[i] = LED[i - 1];
+      }
+      LED[0] = LED[0] - 20;
+      LED[0] = constrain(LED[0], 0 ,255);
+      if(starLonch){
+        LED[0] = 255;
+        starLonch = false;
+      }
+    }
   }
   
   
@@ -158,8 +180,7 @@ void loop() {
 
 
   if(autoTimeControl){  // automatic timecontrol system
-    if(millis() - timer > 8000){
-      Serial.println(del);
+    if(millis() - timer > ATdel){
       timer = millis();
       if(mode == 1){
         if(atcRool){
@@ -171,6 +192,10 @@ void loop() {
         if(del >= 600 || del <= 100){
           atcRool = !atcRool;
         }
+      }
+      else if(mode == 4){
+        ATdel = 3000;
+        starLonch = true;
       }
     }
   }
