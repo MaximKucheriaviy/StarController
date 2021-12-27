@@ -45,6 +45,16 @@ void loop() {
       else if(results.value == 0x926DA25D){
         mode = 4;
       }
+
+      if(mode == 1){
+        if(results.value == 0x926DD22D){
+          del += 100;
+        }
+        else if(results.value == 0x926DA05F){
+          del -= 100;
+        }
+        del = constrain(del, 100, 1000);
+      }
       irrecv.resume(); // Receive the next value
   }
   
@@ -60,7 +70,7 @@ void loop() {
 
      
      else if(mode == 1){
-        del = 1000;
+        del = 100;
         for(int i = 0; i < 18; i++){
           if(i % 4 == 0){
             LED[i] = 255;
