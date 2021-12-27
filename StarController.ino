@@ -6,13 +6,14 @@ int PIN = 3;
 int del;
 
 int LED[18] = {255, 0, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+int chS[18] = {1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0};
 unsigned long int preDelay = 0;
 
 
 Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 
 
-int mode = 1;
+int mode = 2;
 int preMode = -1;
 bool update = true;
 unsigned long int timer = 0;
@@ -54,15 +55,9 @@ void loop() {
   
   
   if(mode != preMode){         //mode initialisation
-     Serial.print(preMode);
-     Serial.println(mode);
-     
-     
      if(mode == 0){
         del = 100;
-     }
-
-     
+     }   
      else if(mode == 1){
         del = 100;
         for(int i = 0; i < 18; i++){
@@ -73,10 +68,22 @@ void loop() {
           LED[i] = 0;
         }
      }
+     else if(mode == 2){
+        del = 80;
+        for(int i = 0; i < 18; i++){
+          if(i % 4 == 0){
+            LED[i] = 255;
+            chS[i] = 1;
+            continue;
+          }
+          LED[i] = 0;
+          chS[i] = 0;
+        }
+     }
      preMode = mode;
   }
   
-  if(millis() - preDelay > del){
+  if(millis() - preDelay > del){ // mode run
     update = true;
     preDelay = millis();
     if(mode == 0){
@@ -89,6 +96,24 @@ void loop() {
         LED[i] = LED[i - 1];
       }
       LED[0] = LED[4];
+    }
+    else if(mode == 2){
+      for(int i = 0; i < 18; i++){
+         if(chS[i] == 1){
+            LED[i] -= 5;
+            LED[i] = constrain(LED[i], 0, 255);
+            if(i != 17){
+              LED[i + 1] = abs(LED[i] - 255);
+            }
+         }
+         LED[0] = LED[4];
+         if(LED[i] == 255){
+              chS[i] = 1;
+            }
+            else if(LED[i] == 0){
+              chS[i] = 0;
+         }
+      }
     }
   }
   
