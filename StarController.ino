@@ -12,8 +12,8 @@ unsigned long int preDelay = 0;
 Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 
 
-unsigned int mode = 0;
-unsigned int preMode = -1;
+int mode = 1;
+int preMode = -1;
 bool update = true;
 
 IRrecv irrecv(RECV_PIN);
@@ -45,25 +45,46 @@ void loop() {
       else if(results.value == 0x926DA25D){
         mode = 4;
       }
-      
       irrecv.resume(); // Receive the next value
   }
   
   
   if(mode != preMode){         //mode initialisation
-     preMode = mode;
+     Serial.print(preMode);
+     Serial.println(mode);
+     
+     
      if(mode == 0){
         del = 100;
      }
+
+     
+     else if(mode == 1){
+        del = 1000;
+        for(int i = 0; i < 18; i++){
+          if(i % 4 == 0){
+            LED[i] = 255;
+            continue;
+          }
+          LED[i] = 0;
+        }
+     }
+     preMode = mode;
   }
   
   if(millis() - preDelay > del){
     update = true;
-    preDelay = preDelay;
+    preDelay = millis();
     if(mode == 0){
       for(int i = 0; i < 18; i++){
         LED[i] = 0;
       }
+    }
+    else if(mode == 1){
+      for(int i = 17; i > 0; i--){
+        LED[i] = LED[i - 1];
+      }
+      LED[0] = LED[4];
     }
   }
   
