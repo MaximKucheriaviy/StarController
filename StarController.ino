@@ -15,6 +15,10 @@ Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 int mode = 1;
 int preMode = -1;
 bool update = true;
+unsigned long int timer = 0;
+bool autoTimeControl = true;
+bool atcRool = true;
+
 
 IRrecv irrecv(RECV_PIN);
 decode_results results;
@@ -44,16 +48,6 @@ void loop() {
       }
       else if(results.value == 0x926DA25D){
         mode = 4;
-      }
-
-      if(mode == 1){
-        if(results.value == 0x926DD22D){
-          del += 100;
-        }
-        else if(results.value == 0x926DA05F){
-          del -= 100;
-        }
-        del = constrain(del, 100, 1000);
       }
       irrecv.resume(); // Receive the next value
   }
@@ -107,5 +101,24 @@ void loop() {
       pixels.show();
     }
     update = false;
+  }
+
+
+  if(autoTimeControl){  // automatic timecontrol system
+    if(millis() - timer > 8000){
+      Serial.println(del);
+      timer = millis();
+      if(mode == 1){
+        if(atcRool){
+           del += 100;
+        }
+        else{
+          del -= 100;
+        }
+        if(del >= 600 || del <= 100){
+          atcRool = !atcRool;
+        }
+      }
+    }
   }
 }
