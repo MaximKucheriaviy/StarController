@@ -13,7 +13,7 @@ unsigned long int preDelay = 0;
 Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 
 
-int mode = 2;
+int mode = 3;
 int preMode = -1;
 bool update = true;
 unsigned long int timer = 0;
@@ -60,6 +60,7 @@ void loop() {
      }   
      else if(mode == 1){
         del = 100;
+        atcRool = true;
         for(int i = 0; i < 18; i++){
           if(i % 4 == 0){
             LED[i] = 255;
@@ -81,12 +82,9 @@ void loop() {
         }
      }
      else if(mode == 3){
-        del = 80;
+        del = 90;
+        atcRool = true;
         for(int i = 0; i < 18; i++){
-          if(i % 4 == 0){
-            LED[i] = 255;
-            continue;
-          }
           LED[i] = 0;
         }
      }
@@ -126,7 +124,24 @@ void loop() {
       }
     }
     else if(mode == 3){
-      
+      if(atcRool){
+        for(int i = 0; i < 17; i++){
+          LED[i] += 5;
+          LED[i] = constrain(LED[i], 0, 255);
+        }
+        if(LED[0] == 255){
+          atcRool = !atcRool;
+        }
+      }
+      else{
+        for(int i = 0; i < 17; i++){
+          LED[i] -= 3;
+          LED[i] = constrain(LED[i], 0, 255);
+        }
+        if(LED[0] == 0){
+          atcRool = !atcRool;
+        }
+      }
     }
   }
   
