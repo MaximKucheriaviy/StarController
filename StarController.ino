@@ -80,6 +80,16 @@ void loop() {
           chS[i] = 0;
         }
      }
+     else if(mode == 3){
+        del = 80;
+        for(int i = 0; i < 18; i++){
+          if(i % 4 == 0){
+            LED[i] = 255;
+            continue;
+          }
+          LED[i] = 0;
+        }
+     }
      preMode = mode;
   }
   
@@ -114,6 +124,9 @@ void loop() {
               chS[i] = 0;
          }
       }
+    }
+    else if(mode == 3){
+      
     }
   }
   
